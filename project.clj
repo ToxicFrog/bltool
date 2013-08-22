@@ -6,5 +6,6 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [clj-http "0.7.6"]
                  [org.clojure/tools.cli "0.2.4"]
-                 [org.clojure/data.xml "0.0.7"]]
+                 [org.clojure/data.xml "0.0.7"]
+                 [crouton "0.1.1"]]
   :main steamtools.core)
