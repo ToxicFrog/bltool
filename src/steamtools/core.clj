@@ -34,21 +34,37 @@
       (:cookies response)
       nil)))
 
-(defn- bl-username [cookies] ((cookies "c_user") :value))
+(defn- bl-more-games
+  [cookies user params]
+  (let [params (conj params
+                     {"user" user
+                      "console" "" "rating" "" "status" "" "unplayed" "" "own" "" "search" ""
+                      "comments" "" "region" "" "region_u" "0" "wish" "" "alpha" ""})
+        response (http/get "http://backloggery.com/ajax_moregames.php"
+                           {:cookies cookies
+                            :query-params params
+                            :headers {"referer" (str "http://backloggery.com/games.php?user=" user)}})]
+    (-> response :body java.io.StringReader. html/parse)))
+
+(defn bl-extract-params [body]
+  (some->> body (tag-seq :input) first :attrs :onclick
+           (re-find #"getMoreGames\(([^,]+), *'([^']+)', *'([^']+)', *([^)]+)\)")
+           rest
+           (zipmap ["aid" "temp_sys" "ajid" "total"])))
 
 (defn- bl-games
   "Retrieve your Backloggery game list."
-  [cookies]
-  (let [username (bl-username cookies)
-        response (http/get "http://backloggery.com/games.php" 
-                           {:cookies cookies
-                            :query-params {"user" username}})]
-    (->> response
-         :body .getBytes html/parse
-         (tag-seq :footer) first
-         (tag-seq :script) first
-         :content)))
+  [user pass]
+  (let [cookies (bl-login user pass)]
+    (loop [games []
+           params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
+      (println (count games) params)
+      (if params
+        (let [page (bl-more-games cookies user params)]
+          (recur (conj games page) (bl-extract-params page)))
+        games))))
 
 (defn -main
   [& args]
-  (->> args (apply bl-login) (bl-games) println))
+  (println (apply bl-games args)))
+
