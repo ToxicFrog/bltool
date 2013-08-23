@@ -19,7 +19,8 @@
   (let [url (str "http://steamcommunity.com/id/" name "/games?tab=all&xml=1")]
     (->> url http/get :body xml/parse-str xml-seq (filter #(= :game (:tag %)))
       (map (comp :name xml-to-map))
-      sort)))
+      sort
+      (map (fn [name] { :name name :platform "Steam" :progress "unplayed" })))))
 
 (defn- bl-login
   "Make a login request to Backloggery, and return the authentication cookies."
