@@ -65,7 +65,7 @@
     (loop [games []
            params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
       (println "Fetched" (count games) "games from Backloggery...")
-      (if (and params (= 0 (count games)))
+      (if params ;(and params (= 0 (count games)))
         (let [page (bl-more-games cookies user params)]
           (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
         (sort-by :name games)))))
