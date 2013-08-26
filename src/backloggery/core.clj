@@ -1,4 +1,4 @@
-(ns steamtools.core
+(ns backloggery.core
   (:require [clj-http.client :as http])
   (:require [clojure.tools.cli :as cli])
   (:require [clojure.data.xml :as xml])
