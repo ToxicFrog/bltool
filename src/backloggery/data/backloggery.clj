@@ -5,7 +5,8 @@
   (:require [backloggery.data.default :refer :all]))
 
 (register-flags ["--bl-name" "backloggery username"]
-                ["--bl-pass" "backloggery password"])
+                ["--bl-pass" "backloggery password"]
+                ["--bl-stealth" "use 'stealth add' and 'stealth edit' when updating backloggery" :flag true])
 
 (defn- tag-seq [tag body]
   (filter #(= tag (:tag %)) (xml-seq body)))
@@ -64,10 +65,57 @@
     (loop [games []
            params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
       (println "Fetched" (count games) "games from Backloggery...")
-      (if (and params (= 0 (count games)))
+      (if params;(and params (= 0 (count games)))
         (let [page (bl-more-games cookies user params)]
           (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
         (sort-by :name games)))))
 
-(defmethod write-games "backloggery" [_]
-  (println "not implemented yet"))
+(defn- add-result [response]
+  (let [divs (tag-seq :div response)
+        update-g (filter #(= "update-g" (:class (:attrs %))) divs)
+        update-r (filter #(= "update-r" (:class (:attrs %))) divs)]
+    (cond
+      (first update-g) (->> update-g first :content (apply str))
+      (first update-r) (->> update-r first :content (apply str))
+      :default "success")))
+
+(defn- complete-code [desc]
+  ({"unplayed" "1"
+    "unfinished" "1"
+    "beaten" "2"
+    "complete" "3"
+    "mastered" "4"
+    "null" "5"}
+   desc))
+
+(defn- add-game [game]
+  (let [user (:bl-name *opts*)
+        pass (:bl-pass *opts*)
+        cookies (bl-login user pass)
+        defaults {"comp" "" "orig_console" "" "region" "0" "own" "1"
+                  "achieve1" "" "achieve2" "" "online" "" "note" ""
+                  "rating" "8" "submit2" "Stealth Add" "wishlist" "0"}
+        params (conj defaults
+                     {"name" (:name game)
+                      "console" (:platform game)
+                      "complete" (complete-code (:progress game))
+                      "unplayed" (if (= "unplayed" (:progress game)) "1" "0")}
+                     (if (:bl-stealth *opts*)
+                       {"submit2" "Stealth Add"}
+                       {"submit1" "Add Game"}))
+        body (map (fn [[k v]] {:name k :content v}) params)]
+    (printf "Adding %s game '%s' to backloggery:" (:progress game) (:name game))
+    (let [response (http/post "http://backloggery.com/newgame.php"
+                              {:cookies cookies
+                               ;:debug true :debug-body true
+                               :query-params {"user" user}
+                               :multipart (vec body)})]
+      (->> response
+           :body
+           java.io.StringReader.
+           html/parse
+           add-result
+           (printf " %s\n")))))
+
+(defmethod write-games "backloggery" [_ games]
+  (dorun (map add-game games)))
