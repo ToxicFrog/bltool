@@ -2,6 +2,7 @@
   (:require [clj-http.client :as http])
   (:require [crouton.html :as html])
   (:require [backloggery.flags :refer :all])
+  (:require [clojure.string :refer [split]])
   (:require [backloggery.data.default :refer :all]))
 
 (register-flags ["--bl-name" "backloggery username"]
@@ -10,6 +11,18 @@
 
 (defn- tag-seq [tag body]
   (filter #(= tag (:tag %)) (xml-seq body)))
+
+(defn- bl-result [response]
+  (let [divs (tag-seq :div response)
+        update-g (filter #(= "update-g" (:class (:attrs %))) divs)
+        update-r (filter #(= "update-r" (:class (:attrs %))) divs)]
+    (cond
+      (first update-g) (->> update-g first :content (apply str))
+      (first update-r) (->> update-r first :content (apply str))
+      :default "unknown result")))
+
+
+;; Logging in to Backloggery
 
 (defn- bl-login
   "Make a login request to Backloggery, and return the authentication cookies."
@@ -24,6 +37,9 @@
     (if (= 302 (:status response))
       (:cookies response)
       nil)))
+
+
+;; Reading the game list
 
 (defn- bl-more-games
   [cookies user params]
@@ -43,13 +59,15 @@
            rest
            (zipmap ["aid" "temp_sys" "ajid" "total"])))
 
+; {:tag :a, :attrs {:href update.php?user=toxicfrog&gameid=4160408}
 (defn- gamebox-to-game [gamebox]
   (let [progress-map { "(M)" "mastered" "(C)" "complete" "(B)" "beaten" "(U)" "unfinished" "(u)" "unplayed" "(-)" "null" }
         bold (->> gamebox (tag-seq :b) (map :content) (map #(apply str %)) (map clojure.string/trim))
+        id (-> (tag-seq :a gamebox) first :attrs :href (split #"gameid=") last)
         name (first bold)
         platform (second bold)
         progress (->> gamebox (tag-seq :img) second :attrs :alt progress-map)]
-    { :name name :platform platform :progress progress }))
+    { :id id :name name :platform platform :progress progress }))
 
 (defn- bl-extract-games [body]
   (->> body (tag-seq :section)
@@ -65,19 +83,13 @@
     (loop [games []
            params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
       (println "Fetched" (count games) "games from Backloggery...")
-      (if params;(and params (= 0 (count games)))
+      (if (and params (= 0 (count games)))
         (let [page (bl-more-games cookies user params)]
           (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
         (sort-by :name games)))))
 
-(defn- add-result [response]
-  (let [divs (tag-seq :div response)
-        update-g (filter #(= "update-g" (:class (:attrs %))) divs)
-        update-r (filter #(= "update-r" (:class (:attrs %))) divs)]
-    (cond
-      (first update-g) (->> update-g first :content (apply str))
-      (first update-r) (->> update-r first :content (apply str))
-      :default "success")))
+
+;; Adding new games
 
 (defn- complete-code [desc]
   ({"unplayed" "1"
@@ -112,7 +124,7 @@
            :body
            java.io.StringReader.
            html/parse
-           add-result
+           bl-result
            (printf " %s\n")))))
 
 (defmethod write-games "backloggery" [_ games]
@@ -120,3 +132,35 @@
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
     (dorun (map #(add-game cookies %) games))))
+
+
+;; Deleting games
+
+(defn- delete-game [cookies game]
+  (let [user (:bl-name *opts*)
+        params {"user" user "delete2" "Stealth Delete"}
+        body (map (fn [[k v]] {:name k :content v}) params)]
+    (printf "Deleting '%s' from backloggery:" (:progress game) (:name game))
+    (let [response (http/post "http://backloggery.com/update.php"
+                              {:cookies cookies
+                               ;:debug true :debug-body true
+                               :query-params {"user" user "gameid" (:id game)}
+                               :multipart (vec body)})]
+      (->> response
+           :body
+           java.io.StringReader.
+           html/parse
+           bl-result
+           (printf " %s\n")))))
+
+(defmethod write-games "backloggery-delete" [_ games]
+  (let [user (:bl-name *opts*)
+        pass (:bl-pass *opts*)
+        cookies (bl-login user pass)]
+    (dorun (map #(delete-game cookies %) games))))
+
+
+;; Editing games
+
+(defmethod write-games "backloggery-edit" [_ games]
+  (println "No support for editing games yet."))

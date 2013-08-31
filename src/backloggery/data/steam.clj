@@ -19,4 +19,4 @@
     (->> url http/get :body xml/parse-str xml-seq (filter #(= :game (:tag %)))
       (map (comp trim :name xml-to-map))
       sort
-      (map (fn [name] { :name name :platform (:steam-platform *opts*) :progress "unplayed" })))))
+      (map (fn [name] { :id "0" :name name :platform (:steam-platform *opts*) :progress "unplayed" })))))
