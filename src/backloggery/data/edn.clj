@@ -1,8 +1,7 @@
 (ns backloggery.data.edn
   (:require [backloggery.flags :refer :all])
   (:require [backloggery.data.default :refer :all])
-  (:require [clojure.edn :as edn])
-  );(:import java.io.PushBackReader))
+  (:require [clojure.edn :as edn]))
 
 (defmethod read-games "edn" [_]
   (edn/read (java.io.PushbackReader. (:input *opts*))))
