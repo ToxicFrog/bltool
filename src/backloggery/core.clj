@@ -15,13 +15,14 @@
 
 (def help
   {"commands"
-   "Command    Desc
+   "    Command    Desc
     -------    ----
     add        Add games to Backloggery, or write game list to a file.
-    edit       Edit game entries already on Backloggery, or delete game entries."   
+    edit       Edit game entries already on Backloggery, or delete game entries.
+    help       Display help. Alias for '--help usage'."   
     
    "formats"
-   "This tool can read and write a variety of sources. The --from and --to
+   "    This tool can read and write a variety of sources. The --from and --to
     options control what formats it reads and write; the --input and --output
     options control what file it writes to or reads from, for formats that are
     stored in files.
@@ -62,8 +63,8 @@
    })
 
 (defn -main
-  [& args]
-  (let [[opts args _] (getopts args)
+  [& argv]
+  (let [[opts args _] (getopts argv)
         command (if (:help opts) "help" (first args))]
     (binding [*opts* opts]
       (if-let [command-fn (commands command)]
