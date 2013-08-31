@@ -142,7 +142,7 @@
   (let [user (:bl-name *opts*)
         params {"user" user "delete2" "Stealth Delete"}
         body (map (fn [[k v]] {:name k :content v}) params)]
-    (printf "Deleting '%s' from backloggery:" (:progress game) (:name game))
+    (printf "Deleting '%s' from backloggery:" (:name game))
     (let [response (http/post "http://backloggery.com/update.php"
                               {:cookies cookies
                                ;:debug true :debug-body true
