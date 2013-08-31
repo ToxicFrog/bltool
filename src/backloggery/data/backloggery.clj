@@ -1,7 +1,8 @@
 (ns backloggery.from.backloggery
   (:require [clj-http.client :as http])
   (:require [crouton.html :as html])
-  (:require [backloggery.flags :refer :all]))
+  (:require [backloggery.flags :refer :all])
+  (:require [backloggery.data.default :refer :all]))
 
 (register-flags ["--bl-name" "backloggery username"]
                 ["--bl-pass" "backloggery password"])
@@ -56,16 +57,17 @@
        ; filter out any collections; these will have an HTML tag as the name rather than a string
        (filter :platform)))
 
-(defn games
-  "Retrieve your Backloggery game list."
-  []
+(defmethod read-games "backloggery" [_]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
     (loop [games []
            params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
       (println "Fetched" (count games) "games from Backloggery...")
-      (if params ;(and params (= 0 (count games)))
+      (if (and params (= 0 (count games)))
         (let [page (bl-more-games cookies user params)]
           (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
         (sort-by :name games)))))
+
+(defmethod write-games "backloggery" [_]
+  (println "not implemented yet"))
