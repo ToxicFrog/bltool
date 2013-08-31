@@ -3,9 +3,9 @@
   (:require [slingshot.slingshot :refer [throw+]]))
 
 (register-flags ["--from"
-                 "What type of data source to read the games/edits from."]
+                 "What type of data source to read the games/edits from. Use '--help formats' for a list of formats."]
                 ["--to"
-                 "What type of destination to write the changes to."])
+                 "What type of destination to write the changes to. Use '--help formats' for a list of formats."])
 
 (defmulti read-games (fn [format] format))
 (defmulti write-games (fn [format games] format))
