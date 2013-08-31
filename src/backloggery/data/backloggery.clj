@@ -88,10 +88,8 @@
     "null" "5"}
    desc))
 
-(defn- add-game [game]
+(defn- add-game [cookies game]
   (let [user (:bl-name *opts*)
-        pass (:bl-pass *opts*)
-        cookies (bl-login user pass)
         defaults {"comp" "" "orig_console" "" "region" "0" "own" "1"
                   "achieve1" "" "achieve2" "" "online" "" "note" ""
                   "rating" "8" "submit2" "Stealth Add" "wishlist" "0"}
@@ -118,4 +116,7 @@
            (printf " %s\n")))))
 
 (defmethod write-games "backloggery" [_ games]
-  (dorun (map add-game games)))
+  (let [user (:bl-name *opts*)
+        pass (:bl-pass *opts*)
+        cookies (bl-login user pass)]
+    (dorun (map #(add-game cookies %) games))))
