@@ -48,7 +48,7 @@
   {"add"
    (fn []
      (let [other-games (data/read-games (:from *opts*))
-           bl-games (data/read-games "backloggery")
+           bl-games (if (:filter *opts*) (data/read-games "backloggery") [])
            new-games (filter-games bl-games other-games)]
        (println "BL " (count bl-games))
        (println "NEW" (count new-games))
