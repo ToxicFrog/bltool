@@ -1,6 +1,7 @@
 (ns backloggery.data.steam
   (:require [clj-http.client :as http])
   (:require [clojure.data.xml :as xml])
+  (:require [clojure.string :refer [trim]])
   (:require [backloggery.flags :refer :all])
   (:require [backloggery.data.default :refer [read-games]]))
 
@@ -16,6 +17,6 @@
   (let [name (:steam-name *opts*)
         url (str "http://steamcommunity.com/id/" name "/games?tab=all&xml=1")]
     (->> url http/get :body xml/parse-str xml-seq (filter #(= :game (:tag %)))
-      (map (comp :name xml-to-map))
+      (map (comp trim :name xml-to-map))
       sort
       (map (fn [name] { :name name :platform (:steam-platform *opts*) :progress "unplayed" })))))
