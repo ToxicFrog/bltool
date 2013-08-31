@@ -127,7 +127,9 @@
            bl-result
            (printf " %s\n")))))
 
-(defmethod write-games "backloggery" [_ games]
+(defmethod write-games "backloggery" [_ games] (write-games "bl-add" games))
+
+(defmethod write-games "bl-add" [_ games]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
@@ -153,7 +155,7 @@
            bl-result
            (printf " %s\n")))))
 
-(defmethod write-games "backloggery-delete" [_ games]
+(defmethod write-games "bl-delete" [_ games]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
