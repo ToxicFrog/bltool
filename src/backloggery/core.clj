@@ -54,13 +54,10 @@
 (def commands
   {"add"
    (fn []
-     (let [other-games (data/read-games (:from *opts*))
+     (let [in-games (data/read-games (:from *opts*))
            bl-games (if (:filter *opts*) (data/read-games "backloggery") [])
-           new-games (filter-games bl-games other-games)]
-       (println "BL " (count bl-games))
-       (println "NEW" (count new-games))
-       (println *in* *out*)
-       (println (:input *opts*) (:output *opts*))
+           new-games (filter-games bl-games in-games)]
+       (printf "Read %d games; of those, %d are new.\n" (count in-games) (count new-games))
        (data/write-games (:to *opts*) new-games)))
    "edit"
    (fn [] nil)
