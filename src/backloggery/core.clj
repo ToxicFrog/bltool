@@ -18,7 +18,9 @@
                  :default "-"]
                 ["--output"
                  "For file-based formats, write output to this file. '-' means stdout."
-                 :default "-"])
+                 :default "-"]
+                ["--name"
+                 "Include only games where the name contains this string."])
 
 (def help
   {"formats"
@@ -44,8 +46,11 @@
 
 (defn- filter-games [bl-games new-games]
   (let [same-name? (fn [x y] (= (:name x) (:name y)))
-        new-game? (fn [game] (not-any? (partial same-name? game) bl-games))]
-    (filter new-game? new-games)))
+        new-game? (fn [game] (not-any? (partial same-name? game) bl-games))
+        name-ok? (fn [game] (.contains (:name game) (:name *opts*)))]
+    (cond->> new-games
+             true (filter new-game?)
+             (:name *opts*) (filter name-ok?))))
 
 ; The actual work happens here
 (defn- execute []

@@ -4,7 +4,7 @@
   (:require [clojure.string :refer [split join]]))
 
 (defn- to-text [game]
-  (format "%8s  %-8s  %-10s  %s" (:id game) (:platform game) (:progress game) (:name game)))
+  (format "%8s  %-10s  %-10s  %s" (:id game) (:platform game) (:progress game) (:name game)))
 
 (defn- from-text [game]
   (let [[id platform progress name] (split game #"\s+" 4)]
