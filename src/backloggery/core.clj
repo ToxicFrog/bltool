@@ -9,9 +9,9 @@
 ; &unplayed= &alpha= &region= &console= &status= &rating= &aj_id=0 &id=1 comments= HTTP/1.1
 
 (register-flags ["--help"
-                 "Show detailed help. Try 'backloggery --help (formats|usage)"]
+                 "Show detailed help. Try 'bltool --help (formats|usage)'"]
                 ["--[no-]filter"
-                 "When adding, filter out games already on Backloggery. Requires loading the game list from Backloggery."
+                 "Filter out games already on Backloggery. Requires loading the game list from Backloggery."
                  :default false]
                 ["--input"
                  "For file-based formats, read input from this file. '-' means stdin."
@@ -33,7 +33,8 @@
     ------       --  ----
     backloggery  RW  Backloggery game library. When writing, equivalent to bl-add.
     bl-add        W  Add new games to Backloggery.
-    bl-edit       W  Edit existing games, overwriting current platform/completion/title information.
+    bl-edit      RW  Edit existing games, overwriting current information.
+                     In read mode, gets all game info, not just basic info (slow!)
     bl-delete     W  Delete all listed games; all properties except ID are ignored.
     steam        R   Game list from Steam Community
     html          W  HTML file that can submit changes to Backloggery
