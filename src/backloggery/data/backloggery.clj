@@ -7,7 +7,8 @@
 
 (register-flags ["--bl-name" "backloggery username"]
                 ["--bl-pass" "backloggery password"]
-                ["--bl-stealth" "use 'stealth add' and 'stealth edit' when updating backloggery" :flag true])
+                ["--bl-stealth" "use 'stealth add' and 'stealth edit' when updating backloggery"
+                 :flag true :default true])
 
 (defn- tag-seq [tag body]
   (filter #(= tag (:tag %)) (xml-seq body)))
@@ -163,6 +164,83 @@
 
 
 ;; Editing games
+
+; we need the following fields for edit
+; name console complete - filled in from game list
+; own note wishlist playing - *can be* filled in from game list, but currently not
+; comp orig_console region achieve1 achieve2 online rating comments - must be filled in from details page
+
+; function bl:details(game)
+;     assert(type(game) == "number", 'invalid argument to bl:details')
+    
+;     game = assert(self:games()[game], 'no game with id '..game)
+    
+;     if game._details then return game end
+    
+;     local body = assert(request(self, { user = self.user, gameid = game.id }, "GET", "http://backloggery.com/update.php"))
+    
+;     local function set(key, value)
+;         if not game[key] then
+;             game[key] = value
+;         end
+;     end
+    
+;     -- name, console, complete, note, wishlist, and playing were already
+;     -- filled in by the initial loading of the game list
+;     -- FIXME own should be as well
+    
+;     -- this leaves: comp, orig_console, region
+;     -- achieve1, achieve2, online
+;     -- rating, comments
+    
+;     set("comp", body:Find("input", "name", "comp").value)
+    
+;     set("orig_console", body:Find("select", "name", "orig_console"):Find("option", "selected", true).value)
+;     set("_orig_console_str", bl.platforms[game.orig_console])
+    
+;     set("region", tonumber(body:Find("select", "name", "region"):Find("option", "selected", true).value))
+;     set("_region_str", bl.regions[game.region])
+    
+;     set("achieve1", tonumber(body:Find("input", "name", "achieve1").value) or "")
+;     set("achieve2", tonumber(body:Find("input", "name", "achieve2").value) or "")
+    
+;     set("online", body:Find("input", "name", "online").value)
+;     set("comments", body:Find("textarea", "name", "comments"):Content())
+
+;     -- set the "details" flag on this game, recording that all fields are filled in
+;     set("_details", true)
+    
+;     return game
+; end
+
+; -- upload the changes we've made to a game structure to the server
+; function bl:editgame(game)
+;     assert(type(game) == "number", 'invalid argument to bl:editgame')
+    
+;     game = assert(self:games()[game], 'no game with id '..game)
+    
+;     -- fill in any missing fields
+;     self:details(game.id)
+    
+;     -- the _ derived fields override the original ones
+;     game.console = bl.rplatforms[game._console_str]
+;     game.orig_console = bl.rplatforms[game._orig_console_str]
+;     game.region = bl.rregions[game._region_str] or 0
+;     game.rating = game._stars - 1; if game.rating < 0 then game.rating = 8 end
+;     game.complete = bl.completecode(game._complete_str)
+;     game.submit2 = "Stealth Save"
+    
+;     -- create request
+;     local r,e = request(self, game, "POST", "http://backloggery.com/update.php?user="..self.user.."&gameid="..game.id)
+    
+;     -- update internal structures
+;     self:games()[game.id] = game
+    
+;     return game
+; end
+
+(defmethod read-games "backloggery-edit" [_]
+  (println "No support for editing games yet."))
 
 (defmethod write-games "backloggery-edit" [_ games]
   (println "No support for editing games yet."))
