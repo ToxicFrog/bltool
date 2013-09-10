@@ -1,6 +1,6 @@
 (ns bltool.data.edn
-  (:require [bltool.flags :refer :all])
   (:require [bltool.data.default :refer :all])
+  (:require [bltool.flags :refer :all])
   (:require [clojure.edn :as edn]))
 
 (defmethod read-games "edn" [_]

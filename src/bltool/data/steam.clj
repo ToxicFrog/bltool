@@ -1,9 +1,9 @@
 (ns bltool.data.steam
+  (:require [bltool.data.default :refer [read-games]])
+  (:require [bltool.flags :refer :all])
   (:require [clj-http.client :as http])
   (:require [clojure.data.xml :as xml])
-  (:require [clojure.string :refer [trim]])
-  (:require [bltool.flags :refer :all])
-  (:require [bltool.data.default :refer [read-games]]))
+  (:require [clojure.string :refer [trim]]))
 
 (register-flags ["--steam-name" "Steam Community name"]
                 ["--steam-platform" "Default platform to use for Steam games (recommended: PC, PCDL, or Steam)" :default "PC"])

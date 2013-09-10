@@ -1,8 +1,8 @@
 (ns bltool.core
-  (:require [bltool.flags :refer :all])
   (:require [bltool.data :as data])
-  (:require [slingshot.slingshot :refer [try+]])
+  (:require [bltool.flags :refer :all])
   (:require [clojure.java.io :as io])
+  (:require [slingshot.slingshot :refer [try+]])
   (:gen-class))
 
 ; GET /ajax_moregames.php? temp_sys=ZZZ &total=0 &own= &wish= &search= &region_u=0 &user=ToxicFrog
