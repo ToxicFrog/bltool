@@ -1,4 +1,4 @@
-(defproject backloggery "0.1.0-SNAPSHOT"
+(defproject bltool "0.1.0-SNAPSHOT"
   :description "Simple tools for managing a Steam game collection"
   :url "https://github.com/toxicfrog/backloggery"
   :license {:name "Apache License v2"
@@ -9,4 +9,4 @@
                  [org.clojure/data.xml "0.0.7"]
                  [slingshot "0.10.3"]
                  [crouton "0.1.1"]]
-  :main backloggery.core)
+  :main bltool.core)

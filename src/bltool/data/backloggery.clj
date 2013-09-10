@@ -1,9 +1,9 @@
-(ns backloggery.from.backloggery
+(ns bltool.from.backloggery
   (:require [clj-http.client :as http])
   (:require [crouton.html :as html])
-  (:require [backloggery.flags :refer :all])
+  (:require [bltool.flags :refer :all])
   (:require [clojure.string :refer [split]])
-  (:require [backloggery.data.default :refer :all]))
+  (:require [bltool.data.default :refer :all]))
 
 (register-flags ["--bl-name" "backloggery username"]
                 ["--bl-pass" "backloggery password"]

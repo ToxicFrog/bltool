@@ -1,5 +1,5 @@
-(ns backloggery.data.default
-  (:require [backloggery.flags :refer :all])
+(ns bltool.data.default
+  (:require [bltool.flags :refer :all])
   (:require [slingshot.slingshot :refer [throw+]]))
 
 (register-flags ["--from"

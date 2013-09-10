@@ -1,6 +1,6 @@
-(ns backloggery.data.text
-  (:require [backloggery.flags :refer :all])
-  (:require [backloggery.data.default :refer :all])
+(ns bltool.data.text
+  (:require [bltool.flags :refer :all])
+  (:require [bltool.data.default :refer :all])
   (:require [clojure.string :refer [split join]]))
 
 (defn- to-text [game]

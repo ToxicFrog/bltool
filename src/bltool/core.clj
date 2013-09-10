@@ -1,6 +1,6 @@
-(ns backloggery.core
-  (:require [backloggery.flags :refer :all])
-  (:require [backloggery.data :as data])
+(ns bltool.core
+  (:require [bltool.flags :refer :all])
+  (:require [bltool.data :as data])
   (:require [slingshot.slingshot :refer [try+]])
   (:require [clojure.java.io :as io])
   (:gen-class))

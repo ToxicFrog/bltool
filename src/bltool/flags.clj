@@ -1,4 +1,4 @@
-(ns backloggery.flags
+(ns bltool.flags
   (:require [clojure.tools.cli :as cli]))
 
 (def flags [])

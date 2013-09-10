@@ -1,9 +1,9 @@
-(ns backloggery.data.steam
+(ns bltool.data.steam
   (:require [clj-http.client :as http])
   (:require [clojure.data.xml :as xml])
   (:require [clojure.string :refer [trim]])
-  (:require [backloggery.flags :refer :all])
-  (:require [backloggery.data.default :refer [read-games]]))
+  (:require [bltool.flags :refer :all])
+  (:require [bltool.data.default :refer [read-games]]))
 
 (register-flags ["--steam-name" "Steam Community name"]
                 ["--steam-platform" "Default platform to use for Steam games (recommended: PC, PCDL, or Steam)" :default "PC"])
