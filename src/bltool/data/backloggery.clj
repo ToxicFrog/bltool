@@ -1,4 +1,4 @@
-(ns bltool.from.backloggery
+(ns bltool.data.backloggery
   (:require [bltool.data.default :refer :all])
   (:require [bltool.flags :refer :all])
   (:require [clj-http.client :as http])

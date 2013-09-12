@@ -2,6 +2,7 @@
   (:require [bltool.data :as data])
   (:require [bltool.flags :refer :all])
   (:require [clojure.java.io :as io])
+  (:require [clojure.core.typed :as t :refer [fn> ann]])
   (:require [slingshot.slingshot :refer [try+]])
   (:gen-class))
 
@@ -22,6 +23,9 @@
                 ["--name"
                  "Include only games where the name contains this string."])
 
+
+
+(t/ann help (t/Map String String))
 (def help
   {"formats"
    "    This tool can read and write a variety of sources. The --from and --to
@@ -45,6 +49,10 @@
    (str "Usage: bltool <command> [<args>]\n\n" (last (getopts [])))
    })
 
+(t/def-alias BLGame '{:id String :name String :platform String :progress String})
+(t/def-alias BLGameList (t/Vec BLGame))
+
+(t/ann filter-games [BLGameList -> BLGameList])
 (defn- filter-games [bl-games new-games]
   (let [same-name? (fn [x y] (= (:name x) (:name y)))
         new-game? (fn [game] (not-any? (partial same-name? game) bl-games))
@@ -54,6 +62,7 @@
              (:name *opts*) (filter name-ok?))))
 
 ; The actual work happens here
+(t/ann execute [Nothing -> Nothing])
 (defn- execute []
   (let [in-games (data/read-games (:from *opts*))
         bl-games (cond
@@ -67,6 +76,7 @@
     (printf "Writing game list to %s.\n" (:to *opts*))
     (data/write-games (:to *opts*) out-games)))
 
+(t/ann resolve-io [t/Map -> t/Map])
 (defn- resolve-io
   "Turn the results of --input and --output flags into actual streams."
   [opts]
@@ -78,10 +88,12 @@
                    *out*
                    (io/writer (:output opts)))}))
 
+(t/ann show-help [String -> Nothing])
 (defn- show-help [section]
   (let [text (or (help section) (help "usage"))]
     (println text)))
 
+(t/ann -main [(t/Vec String) -> Nothing])
 (defn -main
   [& argv]
   (let [[opts args _] (getopts argv)

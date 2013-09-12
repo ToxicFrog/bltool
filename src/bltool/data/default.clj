@@ -1,5 +1,6 @@
 (ns bltool.data.default
   (:require [bltool.flags :refer :all])
+  (:require [clojure.core.typed :as t :refer [fn> ann]])
   (:require [slingshot.slingshot :refer [throw+]]))
 
 (register-flags ["--from"
@@ -7,6 +8,11 @@
                 ["--to"
                  "What type of destination to write the changes to. Use '--help formats' for a list of formats."])
 
+(t/def-alias BLGame '{:id String :name String :platform String :progress String})
+(t/def-alias BLGameList (t/Vec BLGame))
+
+(ann read-games [String -> BLGameList])
+(ann write-games [String BLGameList -> Nothing])
 (defmulti read-games (fn [format] format))
 (defmulti write-games (fn [format games] format))
 
@@ -21,3 +27,4 @@
 
 (defmethod write-games nil [format games]
   (throw+ "No data destination specified. Use '--to <format>' to specify a destination format."))
+
