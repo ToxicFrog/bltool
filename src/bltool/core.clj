@@ -74,7 +74,7 @@
         out-games (filter-games bl-games in-games)]
     (printf "Read %d games in %s format.\n" (count in-games) (:from *opts*))
     (if (:filter *opts*)
-      (printf "After filtering, %d remain.\n"))
+      (printf "After filtering, %d remain.\n" (count out-games)))
     (printf "Writing game list to %s.\n" (:to *opts*))
     (data/write-games (:to *opts*) out-games)))
 
