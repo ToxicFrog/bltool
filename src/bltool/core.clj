@@ -98,11 +98,10 @@
 (t/ann -main [(t/Vec String) -> Nothing])
 (defn -main
   [& argv]
-  (let [[opts args _] (getopts argv)
-        command (if (:help opts) "help" (first args))]
+  (let [[opts args _] (getopts argv)]
     (binding [*opts* (resolve-io opts)]
       (try+
-        (if (:help opts)
+        (if (contains? opts :help)
           (show-help (:help opts))
           (execute))
         (catch String _
