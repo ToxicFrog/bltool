@@ -106,8 +106,5 @@
           (show-help (:help opts))
           (execute))
         (catch String _
-          (println (:object &throw-context)))
-        (catch Object _
-          (println (:message &throw-context))
-          (dorun (map println (:stack-trace &throw-context)))))
+          (println (:object &throw-context))))
       (.flush (:output *opts*)))))
