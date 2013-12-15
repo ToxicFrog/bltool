@@ -74,9 +74,9 @@
 (defn- bl-extract-games [body]
   (->> body (tag-seq :section)
        (filter #(= "gamebox" (:class (:attrs %))))
-       (map gamebox-to-game)
-       ; filter out any collections; these will have an HTML tag as the name rather than a string
-       (filter :platform)))
+       ; filter out collections - they don't have edit links, so (first (tag-seq :a)) will be nil
+       (filter #(first (tag-seq :a %)))
+       (map gamebox-to-game)))
 
 (defmethod read-games "backloggery" [_]
   (let [user (:bl-name *opts*)
