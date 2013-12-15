@@ -36,6 +36,7 @@
     Format       RW  Desc
     ------       --  ----
     backloggery  RW  Backloggery game library. When writing, equivalent to bl-add.
+    bl-wishlist  R   Backloggery game wishlist.
     bl-add        W  Add new games to Backloggery.
    *bl-edit      RW  Edit existing games, overwriting current information.
                      In read mode, gets all game info, not just basic info (slow!)

@@ -44,10 +44,10 @@
 
 (defn- bl-more-games
   [cookies user params]
-  (let [params (conj params
-                     {"user" user
-                      "console" "" "rating" "" "status" "" "unplayed" "" "own" "" "search" ""
-                      "comments" "" "region" "" "region_u" "0" "wish" "" "alpha" ""})
+  (let [defaults {"user" user
+                  "console" "" "rating" "" "status" "" "unplayed" "" "own" "" "search" ""
+                  "comments" "" "region" "" "region_u" "0" "wish" "" "alpha" ""}
+        params (conj defaults params)
         response (http/get "http://backloggery.com/ajax_moregames.php"
                            {:cookies cookies
                             :query-params params
@@ -89,6 +89,22 @@
           (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
         (sort-by :name games)))))
 
+
+; backloggery wishlist
+(defmethod read-games "bl-wishlist" [_]
+  (let [user (:bl-name *opts*)
+        pass (:bl-pass *opts*)
+        cookies (bl-login user pass)]
+    (loop [games []
+           params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
+      (println "Fetched" (count games) "games from Backloggery...")
+      (if params
+        (let [page (bl-more-games cookies user (conj {"wish" "1"} params))]
+          (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
+        (sort-by :name games)))))
+
+(defmethod write-games "bl-wishlist" [_ games]
+  (println "No support for adding wishlist games yet."))
 
 ;; Adding new games
 
