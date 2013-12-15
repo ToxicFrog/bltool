@@ -1,4 +1,4 @@
-(defproject bltool "0.1.1-SNAPSHOT"
+(defproject bltool "0.1.1"
   :description "Simple tools for managing a Steam game collection"
   :url "https://github.com/toxicfrog/backloggery"
   :license {:name "Apache License v2"
