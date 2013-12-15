@@ -110,5 +110,4 @@
         (catch Object _
           (println (:message &throw-context))
           (dorun (map println (:stack-trace &throw-context)))))
-      (if-not (= *out* (:output *opts*)) (.close (:output *opts*)))
-      (if-not (= *in* (:input *opts*)) (.close (:input *opts*))))))
+      (.flush (:output *opts*)))))
