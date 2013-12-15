@@ -3,6 +3,7 @@
   (:require [bltool.flags :refer :all])
   (:require [clj-http.client :as http])
   (:require [clojure.string :refer [split]])
+  (:require [slingshot.slingshot :refer [throw+]])
   (:require [crouton.html :as html]))
 
 (register-flags ["--bl-name" "backloggery username"]
@@ -37,7 +38,7 @@
     ; BL login request returns 200 OK if the login *fails*, and 302 FOUND otherwise.
     (if (= 302 (:status response))
       (:cookies response)
-      nil)))
+      (throw+ "Unable to log in to Backloggery. Please check your username and password."))))
 
 
 ;; Reading the game list
