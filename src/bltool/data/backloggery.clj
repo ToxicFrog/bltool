@@ -90,6 +90,13 @@
           (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
         (sort-by :name games)))))
 
+(defmethod read-games "bl-html-debug" [_]
+  (->> (:input *opts*)
+       slurp
+       java.io.StringReader.
+       html/parse
+       bl-extract-games
+       (sort-by :name)))
 
 ; backloggery wishlist
 (defmethod read-games "bl-wishlist" [_]
