@@ -1,6 +1,6 @@
-# steamtools
+# bltool
 
-Tools for managing a Steam game collection. At the moment only one tool is implemented, steam2backloggery, which copies your Steam game list into your Backloggery.com game list.
+A command line tool for managing a Backloggery game collection, including bulk add/delete and import from Steam.
 
 ## Installation
 
@@ -45,10 +45,6 @@ Download from github. If building from source, run `lein uberjar` to compile (or
     edn          RW  Machine-readable EDN
    
    * Not yet implemented
-
-## Options
-
-...
 
 ## Examples
 
