@@ -107,4 +107,5 @@
           (execute))
         (catch String _
           (println (:object &throw-context))))
-      (.flush (:output *opts*)))))
+      (.flush (:output *opts*))
+      (flush))))
