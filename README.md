@@ -25,6 +25,8 @@ Download from github. If building from source, run `lein uberjar` to compile (or
      --output                       -        For file-based formats, write output to this file. '-' means stdout.                               
      --name                                  Include only games where the name contains this string.                                            
 
+You will need to at least specify `--from` and `--to` to specify input and output formats; some formats may require additional arguments. See the next session for details on how to use them.
+
 ## Supported data sources/formats
 
     This tool can read and write a variety of sources. The --from and --to
@@ -45,6 +47,30 @@ Download from github. If building from source, run `lein uberjar` to compile (or
     edn          RW  Machine-readable EDN
    
     * Not yet implemented
+
+### Instructions for specific formats
+
+* `backloggery`, `bl-add`, `bl-edit`, `bl-delete`
+
+  These all read or modify your backloggery game list. You'll need to specify `--bl-name` and `--bl-pass` so that it can log in to backloggery as you. If adding games, you might want to also use `--filter`, which will exclude games already on your backloggery. If you want bulk adds/deletes to show up on your multitap, use `--no-bl-stealth` as well.
+
+* `steam`
+
+  This reads your Steam game list from `http://steamcommunity.com/id/<name>`. This means that your Steam profile has to be public, and you need to use `--steam-name` to tell it what name to use. This needs to be the name that appears in your Steam Community URL, *not* your Steam login name or display name. The default platform it uses for games from Steam is "PC"; you can use `--steam-platform` to override this.
+
+* `text`
+
+  This is a tab-separated format, one line per game, with the fields `ID`, `platform`, `status`, and `name`. `ID` is the Backloggery game ID (or 0 for games that weren't imported from Backloggery). `platform` is the game's platform; it defaults to PC but can be any platform Backloggery supports. `status` is one of "unplayed", "unfinished", "beaten", "completed", "mastered", or "null". Name can contain anything at all (including tabs and other whitespace) and is thus the last field.
+
+  The platform needs to be the platform ID that backloggery uses; for example, "PCDL", not "PC Downloads". At the moment the only way to get a complete list is to "view source" on backloggery's add-a-game page.
+
+  This is a file oriented format, so you probably want `--input <file>` (when using `--from text`) or `--output <file>` (when using `--to text`). Otherwise it will read from and write to the terminal.
+
+* `edn`
+
+  This saves or loads the game list in [Extensible Data Notation](https://github.com/edn-format/edn) format. It is primarily useful if you want the game list in a machine-readable format for use with other tools.
+
+  Like text, it is file-oriented and should be combined with `--input` or `--output`.
 
 ## Examples
 
