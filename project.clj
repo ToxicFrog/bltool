@@ -18,4 +18,5 @@
                        bltool.data.backloggery
                        bltool.data.edn
                        bltool.data.text]}
+  :profiles {:uberjar {:aot :all}}
   :main bltool.core)
