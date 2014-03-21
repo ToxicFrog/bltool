@@ -4,7 +4,9 @@ A command line tool for managing a Backloggery game collection, including bulk a
 
 ## Installation
 
-Download from github. If building from source, run `lein uberjar` to compile (or just run it directly with `lein run`). If you downloaded an uberjar, run it with `java -jar bltool-VERSION.jar ...`.
+Download the latest release from https://github.com/ToxicFrog/bltool/releases and unzip it. At this point you can import your games from Steam by editing `steam2backloggery.bat` (windows) or `steam2backloggery.sh` (Linux/OSX) to have the correct login information, then running it; if you need more contronl, you can run it directly from the command line with `java -jar bltool.jar <arguments>`.
+
+If you want to build from source, it uses Leiningen, the standard Clojure build tool; use `lein uberjar` to build or `lein run` to run. To create a release zip, use `./release.sh <version>`.
 
 ## Usage
 
