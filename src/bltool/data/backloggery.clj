@@ -3,7 +3,7 @@
   (:require [bltool.flags :refer :all])
   (:require [clj-http.client :as http])
   (:require [clojure.string :refer [split]])
-  (:require [slingshot.slingshot :refer [throw+]])
+  (:require [slingshot.slingshot :refer [throw+ try+]])
   (:require [crouton.html :as html]))
 
 (register-flags ["--bl-name" "backloggery username"]
@@ -140,11 +140,12 @@
                        {"submit1" "Add Game"}))
         body (map (fn [[k v]] {:name k :content v}) params)]
     (printf "Adding %s game '%s' to backloggery:" (:progress game) (:name game))
-    (let [response (http/post "http://backloggery.com/newgame.php"
-                              {:cookies cookies
-                               ;:debug true :debug-body true
-                               :query-params {"user" user}
-                               :multipart (vec body)})]
+    (let [response (http/post
+                     "http://backloggery.com/newgame.php"
+                     {:cookies cookies
+                      ;:debug true :debug-body true
+                      :query-params {"user" user}
+                      :multipart (vec body)})]
       (->> response
            :body
            java.io.StringReader.
@@ -152,13 +153,20 @@
            bl-result
            (printf " %s\n")))))
 
+(defn- safe-add-game [cookies game]
+  (try+
+    (add-game cookies game)
+    (catch Exception _
+      (printf "\nError adding game '%s' -- check your input data.\n" (str (:name game)))
+      (println "Error was: " (:message &throw-context)))))
+
 (defmethod write-games "backloggery" [_ games] (write-games "bl-add" games))
 
 (defmethod write-games "bl-add" [_ games]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
-    (dorun (map #(add-game cookies %) games))))
+    (dorun (map #(safe-add-game cookies %) games))))
 
 
 ;; Deleting games
