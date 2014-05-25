@@ -73,7 +73,7 @@
 
 (defn- bl-extract-games [body]
   (->> body (tag-seq :section)
-       (filter #(= "gamebox" (:class (:attrs %))))
+       (filter #(.contains (:class (:attrs %)) "gamebox"))
        ; filter out collections - they don't have edit links, so (first (tag-seq :a)) will be nil
        (filter #(first (tag-seq :a %)))
        (map gamebox-to-game)))
