@@ -11,6 +11,9 @@
                 ["--bl-stealth" "use 'stealth add' and 'stealth edit' when updating backloggery"
                  :flag true :default true])
 
+(def ^:dynamic *user* nil)
+(def ^:dynamic *cookies* nil)
+
 (defn- tag-seq [tag body]
   (filter #(= tag (:tag %)) (xml-seq body)))
 
@@ -78,17 +81,22 @@
        (filter #(first (tag-seq :a %)))
        (map gamebox-to-game)))
 
+(defn- read-all-games [extra-params]
+  (loop [games []
+         params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
+    (println "Fetched" (count games) "games from Backloggery...")
+    (if params
+      (let [page (bl-more-games *cookies* *user* (conj extra-params params))]
+        (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
+      (sort-by :name games))))
+
 (defmethod read-games "backloggery" [_]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
-    (loop [games []
-           params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
-      (println "Fetched" (count games) "games from Backloggery...")
-      (if params
-        (let [page (bl-more-games cookies user params)]
-          (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
-        (sort-by :name games)))))
+    (binding [*user* user
+              *cookies* cookies]
+      (read-all-games {}))))
 
 (defmethod read-games "bl-html-debug" [_]
   (->> (:input *opts*)
@@ -103,13 +111,9 @@
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
-    (loop [games []
-           params { "aid" "1" "temp_sys" "ZZZ" "ajid" "0" "total" "0" }]
-      (println "Fetched" (count games) "games from Backloggery...")
-      (if params
-        (let [page (bl-more-games cookies user (conj {"wish" "1"} params))]
-          (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
-        (sort-by :name games)))))
+    (binding [*user* user
+              *cookies* cookies]
+      (read-all-games {"wish" "1"}))))
 
 (defmethod write-games "bl-wishlist" [_ games]
   (println "No support for adding wishlist games yet."))
