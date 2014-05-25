@@ -2,6 +2,7 @@
   (:require [bltool.data.default :refer :all])
   (:require [bltool.flags :refer :all])
   (:require [clj-http.client :as http])
+  (:require [clj-http.util :refer [url-decode]])
   (:require [clojure.string :refer [split]])
   (:require [slingshot.slingshot :refer [throw+ try+]])
   (:require [crouton.html :as html]))
@@ -58,11 +59,33 @@
                             :headers {"referer" (str "http://backloggery.com/games.php?user=" user)}})]
     (-> response :body java.io.StringReader. html/parse)))
 
+(defn- bl-get-compilation
+  [cookies user params]
+  (let [defaults {"user" user
+                  "total" "50"
+                  "region_u" "0"
+                  "console" "" "rating" "" "status" "" "unplayed" "" "own" "" "search" ""
+                  "comments" "" "region" "" "wish" "" "alpha" ""}
+        params (conj defaults params)
+        response (http/get "http://backloggery.com/ajax_expandcomp.php"
+                           {:cookies cookies
+                            :query-params params
+                            :headers {"referer" (str "http://backloggery.com/games.php?user=" user)}})]
+    (-> response :body java.io.StringReader. html/parse)))
+
 (defn- bl-extract-params [body]
   (some->> body (tag-seq :input) first :attrs :onclick
            (re-find #"getMoreGames\(([^,]+), *'([^']+)', *'([^']+)', *([^)]+)\)")
            rest
+           (map url-decode)
            (zipmap ["aid" "temp_sys" "ajid" "total"])))
+
+(defn- bl-extract-params-for-compilation [body]
+  (some->> body (tag-seq :span) first :attrs :onclick
+           (re-find #"getComp\(([^,]+), *'([^']+)', *'([^)]+)'\)")
+           rest
+           (map url-decode)
+           (zipmap ["aid", "comp_sys", "comp"])))
 
 ; {:tag :a, :attrs {:href update.php?user=toxicfrog&gameid=4160408}
 (defn- gamebox-to-game [gamebox]
@@ -74,12 +97,28 @@
         progress (->> gamebox (tag-seq :img) second :attrs :alt progress-map)]
     { :id id :name name :platform platform :progress progress }))
 
+; extract params from collection box
+; then invoke bl-get-compilation
+(declare bl-extract-games) ; mutual recursion
+(defn- expand-collection [section]
+  (->> section
+       bl-extract-params-for-compilation
+       (bl-get-compilation *cookies* *user*)
+       bl-extract-games))
+
+; collections can be identified by the lack of <a> tags
+; and also by the first <img> tag having src="images/compilation.gif"
+(defn- games-from-section
+  [section]
+  (cond
+    (= "images/compilation.gif" (some->> section (tag-seq :img) first :attrs :src)) (expand-collection section)
+    (->> section (tag-seq :a) first) [(gamebox-to-game section)]
+    :else nil))
+
 (defn- bl-extract-games [body]
   (->> body (tag-seq :section)
        (filter #(.contains (:class (:attrs %)) "gamebox"))
-       ; filter out collections - they don't have edit links, so (first (tag-seq :a)) will be nil
-       (filter #(first (tag-seq :a %)))
-       (map gamebox-to-game)))
+       (mapcat games-from-section)))
 
 (defn- read-all-games [extra-params]
   (loop [games []
