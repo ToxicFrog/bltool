@@ -19,4 +19,5 @@
   (->> games
        (map to-text)
        (join "\n")
-       (.write sink)))
+       (.write sink))
+  (.write sink "\n"))
