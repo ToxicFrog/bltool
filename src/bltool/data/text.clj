@@ -10,13 +10,13 @@
   (let [[id platform progress name] (-> game trim (split #"\s+" 4))]
     {:id id :name name :platform platform :progress progress}))
 
-(defmethod read-games "text" [_]
-  (->> (:input *opts*)
+(defmethod read-games "text" [_ source]
+  (->> source
        line-seq
        (map from-text)))
 
-(defmethod write-games "text" [_ games]
+(defmethod write-games "text" [_ games sink]
   (->> games
        (map to-text)
        (join "\n")
-       (.write (:output *opts*))))
+       (.write sink)))

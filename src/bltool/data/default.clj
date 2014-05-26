@@ -13,18 +13,17 @@
 
 (ann read-games [String -> BLGameList])
 (ann write-games [String BLGameList -> Nothing])
-(defmulti read-games (fn [format] format))
-(defmulti write-games (fn [format games] format))
+(defmulti read-games (fn [format source] format))
+(defmulti write-games (fn [format games sink] format))
 
-(defmethod read-games :default [format]
+(defmethod read-games :default [format source]
   (throw+ (str "No support for reading from '" format "'. Use '--help formats' to list available formats.")))
 
-(defmethod read-games nil [format]
+(defmethod read-games nil [format source]
   (throw+ "No data source specified. Use '--from <format>' to specify a source format."))
 
-(defmethod write-games :default [format games]
+(defmethod write-games :default [format games sink]
   (throw+ (str "No support for writing to '" format "'. Use '--help formats' to list available formats.")))
 
-(defmethod write-games nil [format games]
+(defmethod write-games nil [format games sink]
   (throw+ "No data destination specified. Use '--to <format>' to specify a destination format."))
-

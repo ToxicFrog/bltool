@@ -129,7 +129,7 @@
         (recur (concat games (bl-extract-games page)) (bl-extract-params page)))
       (sort-by :name games))))
 
-(defmethod read-games "backloggery" [_]
+(defmethod read-games "backloggery" [_ source]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
@@ -137,8 +137,8 @@
               *cookies* cookies]
       (read-all-games {}))))
 
-(defmethod read-games "bl-html-debug" [_]
-  (->> (:input *opts*)
+(defmethod read-games "bl-html-debug" [_ source]
+  (->> source
        slurp
        java.io.StringReader.
        html/parse
@@ -146,7 +146,7 @@
        (sort-by :name)))
 
 ; backloggery wishlist
-(defmethod read-games "bl-wishlist" [_]
+(defmethod read-games "bl-wishlist" [_ source]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
@@ -154,7 +154,7 @@
               *cookies* cookies]
       (read-all-games {"wish" "1"}))))
 
-(defmethod write-games "bl-wishlist" [_ games]
+(defmethod write-games "bl-wishlist" [_ games sink]
   (println "No support for adding wishlist games yet."))
 
 ;; Adding new games
@@ -203,9 +203,9 @@
       (printf "\nError adding game '%s' -- check your input data.\n" (str (:name game)))
       (println "Error was: " (:message &throw-context)))))
 
-(defmethod write-games "backloggery" [_ games] (write-games "bl-add" games))
+(defmethod write-games "backloggery" [_ games sink] (write-games "bl-add" games sink))
 
-(defmethod write-games "bl-add" [_ games]
+(defmethod write-games "bl-add" [_ games sink]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
@@ -231,7 +231,7 @@
            bl-result
            (printf " %s\n")))))
 
-(defmethod write-games "bl-delete" [_ games]
+(defmethod write-games "bl-delete" [_ games sink]
   (let [user (:bl-name *opts*)
         pass (:bl-pass *opts*)
         cookies (bl-login user pass)]
@@ -314,8 +314,8 @@
 ;     return game
 ; end
 
-(defmethod read-games "backloggery-edit" [_]
+(defmethod read-games "backloggery-edit" [_ source]
   (println "No support for editing games yet."))
 
-(defmethod write-games "backloggery-edit" [_ games]
+(defmethod write-games "backloggery-edit" [_ games sink]
   (println "No support for editing games yet."))

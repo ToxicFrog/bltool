@@ -21,7 +21,7 @@
                  " -- are you sure you specified the right --steam-name?"))
     games))
 
-(defmethod read-games "steam" [_]
+(defmethod read-games "steam" [_ source]
   (if (not (:steam-name *opts*))
     (throw+ "No Steam Community name specified - use the --steam-name option."))
   (let [name (:steam-name *opts*)

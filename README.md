@@ -12,20 +12,21 @@ If you want to build from source, it uses Leiningen, the standard Clojure build 
 
     Usage: bltool <command> [<args>]
 
-     Switches                       Default  Desc                                                                                               
-     --------                       -------  ----                                                                                               
-     --from                                  What type of data source to read the games/edits from. Use '--help formats' for a list of formats. 
-     --to                                    What type of destination to write the changes to. Use '--help formats' for a list of formats.      
-     --steam-name                            Steam Community name                                                                               
-     --steam-platform               PC       Default platform to use for Steam games (recommended: PC, PCDL, or Steam)                          
-     --bl-name                               backloggery username                                                                               
-     --bl-pass                               backloggery password                                                                               
-     --no-bl-stealth, --bl-stealth  true     use 'stealth add' and 'stealth edit' when updating backloggery                                     
-     --help                                  Show detailed help. Try 'bltool --help (formats|usage)'                                            
-     --no-filter, --filter          false    Filter out games already on Backloggery. Requires loading the game list from Backloggery.          
-     --input                        -        For file-based formats, read input from this file. '-' means stdin.                                
-     --output                       -        For file-based formats, write output to this file. '-' means stdout.                               
-     --name                                  Include only games where the name contains this string.                                            
+     Switches                       Default  Desc
+     --------                       -------  ----
+     --from                                  What type of data source to read the games/edits from. Use '--help formats' for a list of formats.
+     --to                                    What type of destination to write the changes to. Use '--help formats' for a list of formats.
+     --steam-name                            Steam Community name
+     --steam-platform               PC       Default platform to use for Steam games (recommended: PC, PCDL, or Steam)
+     --bl-name                               backloggery username
+     --bl-pass                               backloggery password
+     --no-bl-stealth, --bl-stealth  true     use 'stealth add' and 'stealth edit' when updating backloggery
+     --help                                  Show detailed help. Try 'bltool --help (formats|usage)'
+     --filter-from                           Read a list of games from this source, and exclude them from the output.
+     --filter-input                          For file-based filters, read filter contents from this file.
+     --input                        -        For file-based formats, read input from this file. '-' means stdin.
+     --output                       -        For file-based formats, write output to this file. '-' means stdout.
+     --name                                  Include only games where the name contains this string.
 
 You will need to at least specify `--from` and `--to` to specify input and output formats; some formats may require additional arguments. See the next session for details on how to use them.
 
@@ -35,7 +36,7 @@ You will need to at least specify `--from` and `--to` to specify input and outpu
     options control what formats it reads and write; the --input and --output
     options control what file it writes to or reads from, for formats that are
     stored in files.
-   
+
     Format       RW  Desc
     ------       --  ----
     backloggery  RW  Backloggery game library. When writing, equivalent to bl-add.
@@ -47,7 +48,7 @@ You will need to at least specify `--from` and `--to` to specify input and outpu
     html*         W  HTML file that can submit changes to Backloggery
     text         RW  User-editable plain text
     edn          RW  Machine-readable EDN
-   
+
     * Not yet implemented
 
 ### Instructions for specific formats
@@ -82,11 +83,11 @@ Download your game list from backloggery for a look:
 
 Import your game list from Steam to Backloggery, editing the game list first. Note that you need the backloggery login options for --filter to work, since this also downloads your backloggery game list and excludes any games you already have there.
 
-    bltool --from steam --to text --output games.txt --steam-name MyName --bl-name MyName --bl-pass TopSecret --filter
+    bltool --from steam --to text --output games.txt --steam-name MyName --bl-name MyName --bl-pass TopSecret --filter-from backloggery
     edit games.txt
     bltool --from text --to backloggery --input games.txt --bl-name MyName --bl-pass TopSecret
 
-Import your game list from Steam in one step with no filtering:
+Import your game list from Steam in one step with no editing, filtering out games already on backloggery:
 
     bltool --from steam --to backloggery --steam-name MyName --bl-name MyName --bl-pass TopSecret --filter
 
@@ -104,7 +105,7 @@ Remove all of your DLC from backloggery, using "stealth delete":
 
 Two features (html output and backloggery edit support) are not yet implemented.
 
-Apart from that, bug reports are welcome! Post them on github and I'll email me.
+Apart from that, bug reports are welcome! Post them on github and it'll email me.
 
 ## License
 

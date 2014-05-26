@@ -11,9 +11,12 @@
 
 (register-flags ["--help"
                  "Show detailed help. Try 'bltool --help (formats|usage)'"]
-                ["--[no-]filter"
-                 "Filter out games already on Backloggery. Requires loading the game list from Backloggery."
-                 :default false]
+                ["--filter-from"
+                 "Read a list of games from this source, and exclude them from the output."
+                 :default nil]
+                ["--filter-input"
+                 "For file-based filters, read filter contents from this file."
+                 :default nil]
                 ["--input"
                  "For file-based formats, read input from this file. '-' means stdin."
                  :default "-"]
@@ -32,7 +35,7 @@
     options control what formats it reads and write; the --input and --output
     options control what file it writes to or reads from, for formats that are
     stored in files.
-   
+
     Format       RW  Desc
     ------       --  ----
     backloggery  RW  Backloggery game library. When writing, equivalent to bl-add.
@@ -45,9 +48,9 @@
     html*         W  HTML file that can submit changes to Backloggery
     text         RW  User-editable plain text
     edn          RW  Machine-readable EDN
-   
+
     * Not yet implemented"
-    
+
    "usage"
    (str "Usage: bltool <command> [<args>]\n\n" (last (getopts [])))
    })
@@ -67,17 +70,17 @@
 ; The actual work happens here
 (t/ann execute [Nothing -> Nothing])
 (defn- execute []
-  (let [in-games (data/read-games (:from *opts*))
+  (let [in-games (data/read-games (:from *opts*) (:input *opts*))
         bl-games (cond
-                   (not (:filter *opts*)) []
-                   (= "backloggery" (:from *opts*)) in-games
-                   :else (data/read-games "backloggery"))
+                   (not (:filter-from *opts*)) []
+                   (= (:from *opts*) (:filter-from *opts*)) in-games
+                   :else (data/read-games (:filter-from *opts*) (:filter-input *opts*)))
         out-games (filter-games bl-games in-games)]
     (printf "Read %d games in %s format.\n" (count in-games) (:from *opts*))
-    (if (:filter *opts*)
-      (printf "After filtering, %d remain.\n" (count out-games)))
+    (if (:filter-from *opts*)
+      (printf "Filtered down to %d games.\n" (count out-games)))
     (printf "Writing game list to %s.\n" (:to *opts*))
-    (data/write-games (:to *opts*) out-games)))
+    (data/write-games (:to *opts*) out-games (:output *opts*))))
 
 (t/ann resolve-io [t/Map -> t/Map])
 (defn- resolve-io
@@ -89,7 +92,8 @@
                   (io/reader (:input opts)))
          :output (if (= "-" (:output opts))
                    *out*
-                   (io/writer (:output opts)))}))
+                   (io/writer (:output opts)))
+         :filter-input (some-> (:filter-input opts) io/reader)}))
 
 (t/ann show-help [String -> Nothing])
 (defn- show-help [section]
