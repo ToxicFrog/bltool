@@ -70,30 +70,31 @@
 ; The actual work happens here
 (t/ann execute [Nothing -> Nothing])
 (defn- execute []
-  (let [in-games (data/read-games (:from *opts*) (:input *opts*))
-        bl-games (cond
-                   (not (:filter-from *opts*)) []
-                   (= (:from *opts*) (:filter-from *opts*)) in-games
-                   :else (data/read-games (:filter-from *opts*) (:filter-input *opts*)))
-        out-games (filter-games bl-games in-games)]
+  (let [in-games (data/read-games (:from *opts*) (:input-fd *opts*))
+        existing-games (cond
+                         (not (:filter-from *opts*)) []
+                         (and (= (:input *opts*) (:filter-input *opts*))
+                              (= (:from *opts*) (:filter-from *opts*))) in-games
+                         :else (data/read-games (:filter-from *opts*) (:filter-input-fd *opts*)))
+        out-games (filter-games existing-games in-games)]
     (printf "Read %d games in %s format.\n" (count in-games) (:from *opts*))
     (if (:filter-from *opts*)
       (printf "Filtered down to %d games.\n" (count out-games)))
     (printf "Writing game list to %s.\n" (:to *opts*))
-    (data/write-games (:to *opts*) out-games (:output *opts*))))
+    (data/write-games (:to *opts*) out-games (:output-fd *opts*))))
 
 (t/ann resolve-io [t/Map -> t/Map])
 (defn- resolve-io
   "Turn the results of --input and --output flags into actual streams."
   [opts]
   (conj opts
-        {:input (if (= "-" (:input opts))
-                  *in*
-                  (io/reader (:input opts)))
-         :output (if (= "-" (:output opts))
-                   *out*
-                   (io/writer (:output opts)))
-         :filter-input (some-> (:filter-input opts) io/reader)}))
+        {:input-fd (if (= "-" (:input opts))
+                     *in*
+                     (io/reader (:input opts)))
+         :output-fd (if (= "-" (:output opts))
+                      *out*
+                      (io/writer (:output opts)))
+         :filter-input-fd (some-> (:filter-input opts) io/reader)}))
 
 (t/ann show-help [String -> Nothing])
 (defn- show-help [section]
@@ -111,5 +112,5 @@
           (execute))
         (catch String _
           (println (:object &throw-context))))
-      (.flush (:output *opts*))
+      (.flush (:output-fd *opts*))
       (flush))))
