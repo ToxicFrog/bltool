@@ -60,7 +60,7 @@
 
 (t/ann filter-games [BLGameList -> BLGameList])
 (defn- filter-games [bl-games new-games]
-  (let [same-name? (fn [x y] (= (:name x) (:name y)))
+  (let [same-name? (fn [x y] (some-> (:name x) (.equalsIgnoreCase (:name y))))
         new-game? (fn [game] (not-any? (partial same-name? game) bl-games))
         name-ok? (fn [game] (.contains (:name game) (:name *opts*)))]
     (cond->> new-games
