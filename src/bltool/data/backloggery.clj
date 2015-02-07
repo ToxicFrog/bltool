@@ -10,7 +10,8 @@
 (register-flags ["--bl-name" "backloggery username"]
                 ["--bl-pass" "backloggery password"]
                 ["--bl-stealth" "use 'stealth add' and 'stealth edit' when updating backloggery"
-                 :flag true :default true])
+                 :flag true :default true]
+                ["--bl-region" "backloggery region code to use when updating backloggery" :default "0"])
 
 (def ^:dynamic *user* nil)
 (def ^:dynamic *cookies* nil)
@@ -177,7 +178,8 @@
                      {"name" (:name game)
                       "console" (:platform game)
                       "complete" (complete-code (:progress game))
-                      "unplayed" (if (= "unplayed" (:progress game)) "1" "0")}
+                      "unplayed" (if (= "unplayed" (:progress game)) "1" "0")
+                      "region" (:bl-region *opts*)}
                      (if (:bl-stealth *opts*)
                        {"submit2" "Stealth Add"}
                        {"submit1" "Add Game"}))

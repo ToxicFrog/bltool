@@ -21,13 +21,17 @@
                  " -- are you sure you specified the right --steam-name?"))
     games))
 
+(defn- extract-game-data 
+  [map]
+  (hash-map :name (trim (:name map)) :played (if (:hoursOnRecord map) "unfinished" "unplayed")))
+
 (defmethod read-games "steam" [_ source]
   (if (not (:steam-name *opts*))
     (throw+ "No Steam Community name specified - use the --steam-name option."))
   (let [name (:steam-name *opts*)
         url (str "http://steamcommunity.com/id/" name "/games?tab=all&xml=1")]
     (->> url http/get :body xml/parse-str xml-seq (filter #(= :game (:tag %)))
-      (map (comp trim :name xml-to-map))
-      sort
-      (map (fn [name] { :id "0" :name name :platform (:steam-platform *opts*) :progress "unplayed" }))
+      (map (comp extract-game-data xml-to-map))
+      (sort-by :name)
+      (map (fn [xdata] { :id "0" :name (xdata :name) :platform (:steam-platform *opts*) :progress (xdata :played) }))
       check-games)))
