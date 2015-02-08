@@ -7,8 +7,8 @@
   (:require [clojure.string :refer [trim, lower-case]]))
 
 (register-flags ["--xbox-name" "Xbox Live GamerTag"]
-  ["--xbox-360-platform" "Platform string to use for Xbox 360 games" :default "Xbox 360"]
-  ["--xbox-one-platform" "Platform string to use for Xbox One games" :default "Xbox One"])
+  ["--xbox-360-platform" "Platform string to use for Xbox 360 games (recommended: 360, Xbox, XBLA, XNA, XbxGoD)" :default "360"]
+  ["--xbox-one-platform" "Platform string to use for Xbox One games (recommended: XBO, Xbox, XbxGoD)" :default "XBO"])
 
 (def xboxapi-key "d22a2a5ed917343a163712dfdf15ef4839b9ea85")
 
