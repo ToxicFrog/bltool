@@ -7,7 +7,7 @@
   (format "%8s  %-10s  %-10s  %s" (:id game) (:platform game) (:progress game) (:name game)))
 
 (defn- from-text [game]
-  (let [[id platform progress name] (-> game trim (split #"\s+" 4))]
+  (let [[id platform progress name] (-> game trim (split #"\s\s+" 4))]
     {:id id :name name :platform platform :progress progress}))
 
 (defmethod read-games "text" [_ source]
