@@ -4,7 +4,7 @@
   (:require [clj-http.client :as http])
   (:require [clojure.data.xml :as xml])
   (:require [slingshot.slingshot :refer [throw+]])
-  (:require [clojure.string :refer [trim]]))
+  (:require [clojure.string :refer [trim, lower-case]]))
 
 (register-flags ["--steam-name" "Steam Community name"]
                 ["--steam-platform" "Default platform to use for Steam games (recommended: PC, PCDL, or Steam)" :default "PC"])
@@ -25,6 +25,10 @@
   [map]
   (hash-map :name (trim (:name map)) :played (if (:hoursOnRecord map) "unfinished" "unplayed")))
 
+(defn- remove-the
+  [name]
+  (if (.startsWith name "the ") (subs name 4) name))
+
 (defmethod read-games "steam" [_ source]
   (if (not (:steam-name *opts*))
     (throw+ "No Steam Community name specified - use the --steam-name option."))
@@ -32,6 +36,6 @@
         url (str "http://steamcommunity.com/id/" name "/games?tab=all&xml=1")]
     (->> url http/get :body xml/parse-str xml-seq (filter #(= :game (:tag %)))
       (map (comp extract-game-data xml-to-map))
-      (sort-by :name)
+      (sort-by (comp remove-the lower-case :name))
       (map (fn [xdata] { :id "0" :name (xdata :name) :platform (:steam-platform *opts*) :progress (xdata :played) }))
       check-games)))
