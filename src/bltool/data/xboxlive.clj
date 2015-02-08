@@ -20,8 +20,8 @@
 (defn- check-games
   [games]
   (if (empty? games)
-    (throw+ (str "Couldn't find any games at http://steamcommunity.com/id/" (:steam-name *opts*)
-                 " -- are you sure you specified the right --steam-name?"))
+    (throw+ (str "Couldn't find any games for Xbox Live GamerTag" (:xbox-name *opts*)
+                 " -- are you sure you specified the right --xbox-name?"))
     games))
 
 (defn- extract-game-data 
