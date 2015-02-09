@@ -1,10 +1,10 @@
 # bltool
 
-A command line tool for managing a Backloggery game collection, including bulk add/delete and import from Steam.
+A command line tool for managing a Backloggery game collection, including bulk add/delete and import from Steam and Xbox Live.
 
 ## Installation
 
-Download the latest release from https://github.com/ToxicFrog/bltool/releases and unzip it. At this point you can import your games from Steam by editing `steam2backloggery.bat` (windows) or `steam2backloggery.sh` (Linux/OSX) to have the correct login information, then running it; if you need more contronl, you can run it directly from the command line with `java -jar bltool.jar <arguments>`.
+Download the latest release and unzip it. At this point you can import your games from Steam by editing `steam2backloggery.bat` (windows) or `steam2backloggery.sh` (Linux/OSX) to have the correct login information, then running it; if you need more contronl, you can run it directly from the command line with `java -jar bltool.jar <arguments>`.
 
 If you want to build from source, it uses Leiningen, the standard Clojure build tool; use `lein uberjar` to build or `lein run` to run. To create a release zip, use `./release.sh <version>`.
 
@@ -18,8 +18,12 @@ If you want to build from source, it uses Leiningen, the standard Clojure build 
      --to                                    What type of destination to write the changes to. Use '--help formats' for a list of formats.
      --steam-name                            Steam Community name
      --steam-platform               PC       Default platform to use for Steam games (recommended: PC, PCDL, or Steam)
+     --xbox-name                             Xbox Live GamerTag
+     --xbox-360-platform            360      Default platform to use for Xbox 360 games (recommended: 360, Xbox, XBLA, XNA, or XbxGoD)
+     --xbox-one-platform            XBO      Default platform to use for Xbox One games (recommended: XBO, Xbox, XbxGoD)
      --bl-name                               backloggery username
      --bl-pass                               backloggery password
+     --bl-region                    0        backloggery region number to use for new games (0=USA, 1=Jpn, 2=PAL, 3=Chinao, 4=Korea, 5=Brazil)
      --no-bl-stealth, --bl-stealth  true     use 'stealth add' and 'stealth edit' when updating backloggery
      --help                                  Show detailed help. Try 'bltool --help (formats|usage)'
      --filter-from                           Read a list of games from this source, and exclude them from the output.
@@ -45,6 +49,7 @@ You will need to at least specify `--from` and `--to` to specify input and outpu
                      In read mode, gets all game info, not just basic info (slow!)
     bl-delete     W  Delete all listed games; all properties except ID are ignored.
     steam        R   Game list from Steam Community
+    xboxlive     R   Game list from Xbox Live
     html*         W  HTML file that can submit changes to Backloggery
     text         RW  User-editable plain text
     edn          RW  Machine-readable EDN
@@ -60,6 +65,14 @@ You will need to at least specify `--from` and `--to` to specify input and outpu
 * `steam`
 
   This reads your Steam game list from `http://steamcommunity.com/id/<name>`. This means that your Steam profile has to be public, and you need to use `--steam-name` to tell it what name to use. This needs to be the name that appears in your Steam Community URL, *not* your Steam login name or display name. The default platform it uses for games from Steam is "PC"; you can use `--steam-platform` to override this.
+
+  This version will now automatically tag games imported from Steam as unfinished (rather than unplayed) if Steam has hours on record for the game. Bear in mind that games you've played offline or games you played before Steam tracked hours might not be detected this way.
+
+* `xboxlive`
+
+  This reads your Xbox Live game list from your Xbox Profile. This means that your XBLA profile has to be public, and you need to use `--xbox-name` to tell it what GamerTag to use. This needs to be your GamerTag, not your Microsoft Account e-mail address. By default it reads both Xbox 360 and Xbox One games (if you have them) and uses the appropriate platform for them; you can use `--xbox-360-platform` or `--xbox-one-platform` to override this. All Xbox games are imported as unfinished since generally they must have been played to show up in the Xbox Live register. In addition, games are imported as completed if you have 100% of their GamerScore.
+
+  This functionality depends on a free account from xboxapi.com which is subject to usage limitations. Since the usage limit is 120 requests per hour and a full import only requires 3 requests, this shouldn't be too much of a problem, but if this service does break or go away then this function will no longer work.
 
 * `text`
 
