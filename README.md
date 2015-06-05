@@ -8,6 +8,17 @@ Download the latest release and unzip it. At this point you can import your game
 
 If you want to build from source, it uses Leiningen, the standard Clojure build tool; use `lein uberjar` to build or `lein run` to run. To create a release zip, use `./release.sh <version>`.
 
+### Homebrew on Mac OS X
+
+You can also install bltool using the [Homebrew](http://brew.sh/) package manager for Mac OS X.
+
+```
+$ brew update
+$ brew install bltool
+```
+
+To upgrade bltool in the future, just use `upgrade` instead of `install`.
+
 ## Usage
 
     Usage: bltool <command> [<args>]
