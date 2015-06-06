@@ -45,6 +45,7 @@
                      In read mode, gets all game info, not just basic info (slow!)
     bl-delete     W  Delete all listed games; all properties except ID are ignored.
     steam        R   Game list from Steam Community
+    xboxlive     R   Game list from Xbox Live
     html*         W  HTML file that can submit changes to Backloggery
     text         RW  User-editable plain text
     edn          RW  Machine-readable EDN
