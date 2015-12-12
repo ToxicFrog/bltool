@@ -49,6 +49,7 @@
     html*         W  HTML file that can submit changes to Backloggery
     text         RW  User-editable plain text
     edn          RW  Machine-readable EDN
+    json         RW  Machine-readable JSON
 
     * Not yet implemented"
 

@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.typed "0.2.5"]
                  [org.clojure/data.xml "0.0.7"]
-                 [org.clojure/data.json "0.2.5"]
+                 [org.clojure/data.json "0.2.6"]
                  [org.clojure/tools.cli "0.2.4"]
                  [clj-http "0.7.6"]
                  [slingshot "0.10.3"]

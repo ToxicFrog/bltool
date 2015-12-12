@@ -64,6 +64,7 @@ You will need to at least specify `--from` and `--to` to specify input and outpu
     html*         W  HTML file that can submit changes to Backloggery
     text         RW  User-editable plain text
     edn          RW  Machine-readable EDN
+    json         RW  Machine-readable JSON
 
     * Not yet implemented
 
