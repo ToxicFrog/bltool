@@ -36,10 +36,10 @@
   [name pass]
   (println "Logging into Backloggery as" name)
   (let [response (http/post
-                   "http://backloggery.com/login.php"
+                   "https://backloggery.com/login.php"
                    {:multipart [{:name "username" :content name}
                                 {:name "password" :content pass}
-                                {:name "duration" :content "hour"}]})]
+                                ]})]
     ; BL login request returns 200 OK if the login *fails*, and 302 FOUND otherwise.
     (if (= 302 (:status response))
       (:cookies response)
