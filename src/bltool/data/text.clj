@@ -13,6 +13,7 @@
 (defmethod read-games "text" [_ source]
   (->> source
        line-seq
+       (filter (comp not empty?))
        (map from-text)))
 
 (defmethod write-games "text" [_ games sink]
