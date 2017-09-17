@@ -54,10 +54,10 @@
                   "console" "" "rating" "" "status" "" "unplayed" "" "own" "" "search" ""
                   "comments" "" "region" "" "region_u" "0" "wish" "" "alpha" ""}
         params (conj defaults params)
-        response (http/get "http://backloggery.com/ajax_moregames.php"
+        response (http/get "https://backloggery.com/ajax_moregames.php"
                            {:cookies cookies
                             :query-params params
-                            :headers {"referer" (str "http://backloggery.com/games.php?user=" user)}})]
+                            :headers {"referer" (str "https://backloggery.com/games.php?user=" user)}})]
     (-> response :body java.io.StringReader. html/parse)))
 
 (defn- bl-get-compilation
@@ -68,10 +68,10 @@
                   "console" "" "rating" "" "status" "" "unplayed" "" "own" "" "search" ""
                   "comments" "" "region" "" "wish" "" "alpha" ""}
         params (conj defaults params)
-        response (http/get "http://backloggery.com/ajax_expandcomp.php"
+        response (http/get "https://backloggery.com/ajax_expandcomp.php"
                            {:cookies cookies
                             :query-params params
-                            :headers {"referer" (str "http://backloggery.com/games.php?user=" user)}})]
+                            :headers {"referer" (str "https://backloggery.com/games.php?user=" user)}})]
     (-> response :body java.io.StringReader. html/parse)))
 
 (defn- bl-extract-params [body]
@@ -186,7 +186,7 @@
         body (map (fn [[k v]] {:name k :content v}) params)]
     (printf "Adding %s game '%s' to backloggery:" (:progress game) (:name game))
     (let [response (http/post
-                     "http://backloggery.com/newgame.php"
+                     "https://backloggery.com/newgame.php"
                      {:cookies cookies
                       ;:debug true :debug-body true
                       :query-params {"user" user}
@@ -221,7 +221,7 @@
         params {"user" user "delete2" "Stealth Delete"}
         body (map (fn [[k v]] {:name k :content v}) params)]
     (printf "Deleting '%s' from backloggery:" (:name game))
-    (let [response (http/post "http://backloggery.com/update.php"
+    (let [response (http/post "https://backloggery.com/update.php"
                               {:cookies cookies
                                ;:debug true :debug-body true
                                :query-params {"user" user "gameid" (:id game)}
@@ -254,7 +254,7 @@
 
 ;     if game._details then return game end
 
-;     local body = assert(request(self, { user = self.user, gameid = game.id }, "GET", "http://backloggery.com/update.php"))
+;     local body = assert(request(self, { user = self.user, gameid = game.id }, "GET", "https://backloggery.com/update.php"))
 
 ;     local function set(key, value)
 ;         if not game[key] then
@@ -308,7 +308,7 @@
 ;     game.submit2 = "Stealth Save"
 
 ;     -- create request
-;     local r,e = request(self, game, "POST", "http://backloggery.com/update.php?user="..self.user.."&gameid="..game.id)
+;     local r,e = request(self, game, "POST", "https://backloggery.com/update.php?user="..self.user.."&gameid="..game.id)
 
 ;     -- update internal structures
 ;     self:games()[game.id] = game
