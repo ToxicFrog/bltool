@@ -2,6 +2,8 @@
 
 A command line tool for managing a Backloggery game collection, including bulk add/delete and import from Steam and Xbox Live.
 
+**NOTE: This project is no longer maintained. It is known to have issues with the current version of the backloggery site.**
+
 ## Installation
 
 Download the [latest release from the Github releases page](https://github.com/ToxicFrog/bltool/releases) and unzip it. At this point you can import your games from Steam by editing `steam2backloggery.bat` (windows) or `steam2backloggery.sh` (Linux/OSX) to have the correct login information, then running it; if you need more contronl, you can run it directly from the command line with `java -jar bltool.jar <arguments>`.
